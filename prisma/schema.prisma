@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  email      String   @unique
+  password   String
+  name       String   @unique
+  avatarPath String   @default("/uploadss/default-avatar.png") @map("avatar_path")
+  phone      String   @default("")
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  name        String   @unique
+  slug        String   @unique
+  description String
+  price       Int
+  images      String[]
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  name      String   @unique
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  rating    Int
+  text      String
+}
+
+model Order {
+  id        Int             @id @default(autoincrement())
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @updatedAt @map("updated_at")
+  status    EnumOrderStatus @default(PENDING)
+  items     OrderItem[]
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  quantity  Int
+  price     Int
+  Order     Order?   @relation(fields: [orderId], references: [id])
+  orderId   Int?
+}
+
+enum EnumOrderStatus {
+  PENDING
+  PAYED
+  SHIPPED
+  DELIVERED
+}

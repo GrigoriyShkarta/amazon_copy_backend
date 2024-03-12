@@ -16,6 +16,9 @@ model User {
   name       String   @unique
   avatarPath String   @default("/uploadss/default-avatar.png") @map("avatar_path")
   phone      String   @default("")
+  orders Order[]
+  reviews Review[]
+  favorites Product[]
 }
 
 model Product {
@@ -27,6 +30,12 @@ model Product {
   description String
   price       Int
   images      String[]
+  orderItems OrderItem[]
+  reviews Review[]
+  category Category? @relation(fields: [categoryId], references: [id])
+  categoryId Int @map("category_id")
+  user User? @relation(fields: [userId], references: [id])
+  userId Int? @map("user_id")
 }
 
 model Category {
@@ -34,6 +43,8 @@ model Category {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   name      String   @unique
+  slug String @unique
+  products Product[]
 }
 
 model Review {
@@ -42,6 +53,10 @@ model Review {
   updatedAt DateTime @updatedAt @map("updated_at")
   rating    Int
   text      String
+  user User @relation(fields: [userId], references: [id])
+  userId Int @map("user_id")
+  product Product @relation(fields: [productId], references: [id])
+  productId Int @map("product_id")
 }
 
 model Order {
@@ -50,6 +65,8 @@ model Order {
   updatedAt DateTime        @updatedAt @map("updated_at")
   status    EnumOrderStatus @default(PENDING)
   items     OrderItem[]
+  user User @relation(fields: [userId], references: [id])
+  userId Int @map("user_id")
 }
 
 model OrderItem {
@@ -58,8 +75,11 @@ model OrderItem {
   updatedAt DateTime @updatedAt @map("updated_at")
   quantity  Int
   price     Int
-  Order     Order?   @relation(fields: [orderId], references: [id])
-  orderId   Int?
+  order     Order?   @relation(fields: [orderId], references: [id])
+  orderId   Int? @map("order_id")
+  product Product? @relation(fields: [productId], references: [id])
+  productId Int @map("product_id")
+  @@map("Order_item")
 }
 
 enum EnumOrderStatus {
